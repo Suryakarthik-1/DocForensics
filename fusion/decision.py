@@ -53,7 +53,7 @@ def fuse(detections: list[Detection], model_confidence: float = 0.0,
             total_w += hw
         if total_w > 0:
             merged /= total_w
-        merged = np.clip(merged, 0, 1)
+        merged = np.clip(np.nan_to_num(merged, nan=0.0), 0, 1)
     else:
         merged = np.zeros((256, 256), dtype=np.float32)
 

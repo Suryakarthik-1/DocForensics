@@ -25,6 +25,7 @@ def estimate_local_noise(img: np.ndarray, window: int = NOISE_WINDOW) -> np.ndar
 
     if noise_map.max() > 0:
         noise_map = noise_map / noise_map.max()
+    noise_map = np.nan_to_num(noise_map, nan=0.0)
     return noise_map
 
 def find_noise_anomalies(noise_map: np.ndarray,
@@ -65,8 +66,8 @@ class NoiseDetector(Detector):
                 heatmap=noise_map,
                 regions=regions,
                 details={
-                    'mean_noise': float(noise_map.mean()),
-                    'std': float(noise_map.std()),
+                    'mean_noise': float(np.nan_to_num(noise_map.mean())),
+                    'std':        float(np.nan_to_num(noise_map.std())),
                 },
             )
         except Exception as e:
