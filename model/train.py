@@ -22,8 +22,8 @@ def train():
 
     train_ds = TamperDataset(split='train')
     val_ds   = TamperDataset(split='val')
-    train_dl = DataLoader(train_ds, batch_size=BATCH_SIZE, shuffle=True,  num_workers=2)
-    val_dl   = DataLoader(val_ds,   batch_size=BATCH_SIZE, shuffle=False, num_workers=2)
+    train_dl = DataLoader(train_ds, batch_size=BATCH_SIZE, shuffle=True,  num_workers=0)
+    val_dl   = DataLoader(val_ds,   batch_size=BATCH_SIZE, shuffle=False, num_workers=0)
 
     model = TamperNet().to(device)
     opt   = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)

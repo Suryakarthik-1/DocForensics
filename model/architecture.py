@@ -78,8 +78,8 @@ class TamperNet(nn.Module):
         e2r = self.e2_rgb(self.pool(e1r)); e2s = self.e2_srm(self.pool(e1s))
         e3r = self.e3_rgb(self.pool(e2r)); e3s = self.e3_srm(self.pool(e2s))
 
-        # Fuse at bottleneck
-        fused    = self.bottleneck(torch.cat([e3r, e3s], dim=1))
+        # Fuse at bottleneck (pool a third time so decoder's 3 upsamplings cancel)
+        fused    = self.bottleneck(torch.cat([self.pool(e3r), self.pool(e3s)], dim=1))
         cls_logit = self.cls_head(fused)
 
         # Decode with skip connections (align spatial size before cat)
