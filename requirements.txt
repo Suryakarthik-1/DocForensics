@@ -1,0 +1,13 @@
+numpy
+opencv-python
+Pillow
+scikit-image
+scipy
+pytest
+pytest-cov
+fastapi
+uvicorn[standard]
+python-multipart
+pydantic
+exifread
+PyMuPDF
