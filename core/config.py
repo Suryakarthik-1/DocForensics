@@ -28,13 +28,14 @@ DCT_HIST_BINS   = 64
 FONT_BASELINE_TOL = 3
 
 FUSION_WEIGHTS = {
-    "ela":         0.15,
-    "noise":       0.15,
-    "copy_move":   0.15,
-    "double_jpeg": 0.10,
-    "font":        0.15,
-    "metadata":    0.10,
-    "model":       0.20,
+    'ela':          0.13,
+    'noise':        0.13,
+    'copy_move':    0.13,
+    'double_jpeg':  0.08,
+    'font':         0.13,
+    'metadata':     0.08,
+    'ai_generated': 0.12,
+    'model':        0.20,
 }
 
 TAMPER_THRESHOLD = 0.50

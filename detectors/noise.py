@@ -1,3 +1,4 @@
+import warnings
 import cv2
 import numpy as np
 from skimage.restoration import estimate_sigma
@@ -17,7 +18,9 @@ def estimate_local_noise(img: np.ndarray, window: int = NOISE_WINDOW) -> np.ndar
     for y in range(0, h - window, window // 2):
         for x in range(0, w - window, window // 2):
             block = gray[y:y+window, x:x+window]
-            sigma = estimate_sigma(block, average_sigmas=True)
+            with warnings.catch_warnings():
+                warnings.simplefilter('ignore')
+                sigma = estimate_sigma(block, average_sigmas=True)
             noise_map[y:y+window, x:x+window] = float(sigma)
 
     if noise_map.max() > 0:

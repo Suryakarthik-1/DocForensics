@@ -12,3 +12,6 @@ pydantic
 exifread
 PyMuPDF
 PyWavelets
+transformers
+torch
+torchvision
