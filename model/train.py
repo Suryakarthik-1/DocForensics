@@ -1,0 +1,63 @@
+import json
+import torch
+import torch.nn as nn
+from torch.utils.data import DataLoader
+
+from core.config import (BATCH_SIZE, CHECKPOINTS_DIR, EARLY_STOP_PATIENCE,
+                          LEARNING_RATE, MAX_EPOCHS)
+from model.architecture import TamperNet
+from model.dataset import TamperDataset
+from model.evaluate import evaluate
+
+
+def compute_loss(pred_mask, pred_logit, gt_mask, gt_label):
+    mask_loss  = nn.BCELoss()(pred_mask, gt_mask)
+    label_loss = nn.BCEWithLogitsLoss()(pred_logit.squeeze(), gt_label.float())
+    return mask_loss + 0.5 * label_loss
+
+
+def train():
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    print(f'Training on {device}')
+
+    train_ds = TamperDataset(split='train')
+    val_ds   = TamperDataset(split='val')
+    train_dl = DataLoader(train_ds, batch_size=BATCH_SIZE, shuffle=True,  num_workers=2)
+    val_dl   = DataLoader(val_ds,   batch_size=BATCH_SIZE, shuffle=False, num_workers=2)
+
+    model = TamperNet().to(device)
+    opt   = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
+    sched = torch.optim.lr_scheduler.ReduceLROnPlateau(opt, patience=3, factor=0.5)
+
+    best_auc = 0.0
+    no_improve = 0
+    history  = []
+
+    CHECKPOINTS_DIR.mkdir(parents=True, exist_ok=True)
+
+    for epoch in range(1, MAX_EPOCHS + 1):
+        model.train()
+        train_loss = 0.0
+
+        for imgs, masks, labels in train_dl:
+            imgs, masks, labels = imgs.to(device), masks.to(device), labels.to(device)
+            opt.zero_grad()
+            pred_mask, pred_logit = model(imgs)
+            loss = compute_loss(pred_mask, pred_logit, masks, labels)
+            loss.backward()
+            opt.step()
+            train_loss += loss.item()
+
+        metrics = evaluate(model, val_dl, device)
+        sched.step(metrics['auc'])
+
+        print(f"Epoch {epoch:03d} | loss={train_loss/len(train_dl):.4f} "
+              f"| auc={metrics['auc']:.4f} | iou={metrics['pixel_iou']:.4f}")
+
+        history.append({'epoch': epoch, **metrics})
+
+        if metrics['auc'] > best_auc:
+            best_auc   = metrics['auc']
+            no_improve = 0
+            torch.save(model.state_dict(), CHECKPOINTS_DIR / 'best.pt')
+            print(f'  saved best model (auc={best_auc:.4f})')

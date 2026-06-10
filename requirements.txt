@@ -16,3 +16,4 @@ transformers
 torch
 torchvision
 httpx2
+scikit-learn
