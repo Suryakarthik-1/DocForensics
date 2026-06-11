@@ -11,11 +11,17 @@ from model.evaluate import evaluate
 
 
 def compute_loss(pred_mask, pred_logit, gt_mask, gt_label, pos_weight: float = 10.0):
-    mask_loss  = nn.BCELoss()(pred_mask, gt_mask)
-    # pos_weight tells the loss "genuine samples are rare — penalise missing them more"
     pw         = torch.tensor([pos_weight], device=pred_logit.device)
     label_loss = nn.BCEWithLogitsLoss(pos_weight=pw)(pred_logit.view(-1), gt_label.float())
-    return mask_loss + 0.5 * label_loss
+
+    # Only apply mask loss on tampered samples (label=1); genuine masks are trivially zero
+    tampered = gt_label.bool()
+    if tampered.any():
+        mask_loss = nn.BCELoss()(pred_mask[tampered], gt_mask[tampered])
+    else:
+        mask_loss = torch.tensor(0.0, device=pred_logit.device)
+
+    return label_loss + 0.5 * mask_loss
 
 
 def train():
