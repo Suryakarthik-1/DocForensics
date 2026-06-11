@@ -10,9 +10,11 @@ from model.dataset import TamperDataset
 from model.evaluate import evaluate
 
 
-def compute_loss(pred_mask, pred_logit, gt_mask, gt_label):
+def compute_loss(pred_mask, pred_logit, gt_mask, gt_label, pos_weight: float = 10.0):
     mask_loss  = nn.BCELoss()(pred_mask, gt_mask)
-    label_loss = nn.BCEWithLogitsLoss()(pred_logit.squeeze(), gt_label.float())
+    # pos_weight tells the loss "genuine samples are rare — penalise missing them more"
+    pw         = torch.tensor([pos_weight], device=pred_logit.device)
+    label_loss = nn.BCEWithLogitsLoss(pos_weight=pw)(pred_logit.view(-1), gt_label.float())
     return mask_loss + 0.5 * label_loss
 
 
@@ -61,3 +63,18 @@ def train():
             no_improve = 0
             torch.save(model.state_dict(), CHECKPOINTS_DIR / 'best.pt')
             print(f'  saved best model (auc={best_auc:.4f})')
+        else:
+            no_improve += 1
+            if no_improve >= EARLY_STOP_PATIENCE:
+                print(f'Early stopping at epoch {epoch}')
+                break
+
+    # Always save final weights so inference has something to load
+    torch.save(model.state_dict(), CHECKPOINTS_DIR / 'last.pt')
+    if not (CHECKPOINTS_DIR / 'best.pt').exists():
+        torch.save(model.state_dict(), CHECKPOINTS_DIR / 'best.pt')
+        print('Saved best.pt (fallback — auc never exceeded 0.0)')
+
+    with open(CHECKPOINTS_DIR / 'history.json', 'w') as f:
+        json.dump(history, f, indent=2)
+    print(f'Training done. Best AUC: {best_auc:.4f}')

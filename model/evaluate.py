@@ -14,9 +14,7 @@ def evaluate(model, loader: DataLoader, device: torch.device) -> dict:
             imgs, masks = imgs.to(device), masks.to(device)
             pred_mask, pred_logit = model(imgs)
 
-            probs = torch.sigmoid(pred_logit).squeeze().cpu().numpy()
-            if probs.ndim == 0:
-                probs = np.array([float(probs)])
+            probs = torch.sigmoid(pred_logit).view(-1).cpu().numpy()
 
             all_scores.extend(probs.tolist())
             all_labels.extend(labels.numpy().tolist())

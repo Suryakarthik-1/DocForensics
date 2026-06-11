@@ -13,8 +13,13 @@ class TamperDataset(Dataset):
         tampered = sorted(TAMPERED_DIR.glob('*.jpg')) + sorted(TAMPERED_DIR.glob('*.png'))
 
         all_items = [(p, 0) for p in genuine] + [(p, 1) for p in tampered]
-        cut       = int(len(all_items) * (1 - val_fraction))
 
+        # Shuffle with fixed seed so train/val split is reproducible and class-balanced
+        rng = np.random.default_rng(42)
+        order = rng.permutation(len(all_items)).tolist()
+        all_items = [all_items[i] for i in order]
+
+        cut = int(len(all_items) * (1 - val_fraction))
         self.items   = all_items[:cut] if split == 'train' else all_items[cut:]
         self.size    = MODEL_INPUT_SIZE
         self.augment = (split == 'train')
@@ -50,10 +55,23 @@ class TamperDataset(Dataset):
 
 
 def _augment(img: np.ndarray, mask: np.ndarray):
+    # Flips
     if np.random.rand() > 0.5:
         img  = img[:, ::-1, :].copy()
         mask = mask[:, ::-1].copy()
     if np.random.rand() > 0.5:
         img  = img[::-1, :, :].copy()
         mask = mask[::-1, :].copy()
+
+    # Brightness / contrast jitter
+    if np.random.rand() > 0.5:
+        alpha = np.random.uniform(0.7, 1.3)   # contrast
+        beta  = np.random.uniform(-0.1, 0.1)  # brightness
+        img   = np.clip(img * alpha + beta, 0, 1).astype(np.float32)
+
+    # Gaussian noise
+    if np.random.rand() > 0.5:
+        noise = np.random.normal(0, 0.02, img.shape).astype(np.float32)
+        img   = np.clip(img + noise, 0, 1)
+
     return img, mask
