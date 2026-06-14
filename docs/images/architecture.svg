@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 520" font-family="Segoe UI, Inter, sans-serif">
+  <defs>
+    <linearGradient id="abg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#11141b"/><stop offset="1" stop-color="#0b0d12"/>
+    </linearGradient>
+    <marker id="ar" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+      <path d="M0,0 L9,4.5 L0,9 Z" fill="#6366f1"/>
+    </marker>
+    <marker id="arg" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+      <path d="M0,0 L9,4.5 L0,9 Z" fill="#22c55e"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1000" height="520" rx="16" fill="url(#abg)"/>
+  <text x="32" y="44" fill="#f3f5fa" font-size="22" font-weight="700">TamperNet — Two-Stream CNN</text>
+  <text x="32" y="68" fill="#7b8294" font-size="14">A U-Net that fuses image content with a noise-residual stream to localize tampering</text>
+
+  <!-- Input -->
+  <rect x="32" y="210" width="96" height="96" rx="10" fill="#151922" stroke="#262c39"/>
+  <text x="80" y="252" text-anchor="middle" font-size="30">🖼️</text>
+  <text x="80" y="284" text-anchor="middle" fill="#d4d8e2" font-size="12" font-weight="600">Input</text>
+  <text x="80" y="299" text-anchor="middle" fill="#7b8294" font-size="10">3×128×128</text>
+
+  <!-- split arrows -->
+  <path d="M128,238 C160,238 160,150 196,150" fill="none" stroke="#6366f1" stroke-width="2" marker-end="url(#ar)"/>
+  <path d="M128,278 C160,278 160,372 196,372" fill="none" stroke="#6366f1" stroke-width="2" marker-end="url(#ar)"/>
+
+  <!-- RGB stream -->
+  <text x="206" y="120" fill="#9aa0b4" font-size="12" font-weight="600">RGB STREAM</text>
+  <g>
+    <rect x="200" y="128" width="58" height="58" rx="8" fill="#1b2030" stroke="#33384a"/>
+    <text x="229" y="153" text-anchor="middle" fill="#cdd2de" font-size="11">e1</text>
+    <text x="229" y="169" text-anchor="middle" fill="#7b8294" font-size="9.5">32ch</text>
+    <rect x="278" y="135" width="48" height="44" rx="8" fill="#1b2030" stroke="#33384a"/>
+    <text x="302" y="158" text-anchor="middle" fill="#cdd2de" font-size="11">e2</text>
+    <text x="302" y="172" text-anchor="middle" fill="#7b8294" font-size="9.5">64</text>
+    <rect x="346" y="141" width="40" height="32" rx="8" fill="#1b2030" stroke="#33384a"/>
+    <text x="366" y="161" text-anchor="middle" fill="#cdd2de" font-size="10.5">e3</text>
+  </g>
+  <line x1="258" y1="157" x2="276" y2="157" stroke="#6366f1" stroke-width="1.5" marker-end="url(#ar)"/>
+  <line x1="326" y1="157" x2="344" y2="157" stroke="#6366f1" stroke-width="1.5" marker-end="url(#ar)"/>
+
+  <!-- SRM stream -->
+  <text x="206" y="346" fill="#9aa0b4" font-size="12" font-weight="600">SRM NOISE STREAM</text>
+  <rect x="200" y="352" width="58" height="58" rx="8" fill="#241b2e" stroke="#4a3358"/>
+  <text x="229" y="377" text-anchor="middle" fill="#e6cdf2" font-size="11">e1</text>
+  <text x="229" y="393" text-anchor="middle" fill="#9a7bb0" font-size="9.5">32ch</text>
+  <rect x="278" y="359" width="48" height="44" rx="8" fill="#241b2e" stroke="#4a3358"/>
+  <text x="302" y="382" text-anchor="middle" fill="#e6cdf2" font-size="11">e2</text>
+  <rect x="346" y="365" width="40" height="32" rx="8" fill="#241b2e" stroke="#4a3358"/>
+  <text x="366" y="385" text-anchor="middle" fill="#e6cdf2" font-size="10.5">e3</text>
+  <line x1="258" y1="381" x2="276" y2="381" stroke="#a855f7" stroke-width="1.5" marker-end="url(#ar)"/>
+  <line x1="326" y1="381" x2="344" y2="381" stroke="#a855f7" stroke-width="1.5" marker-end="url(#ar)"/>
+  <text x="150" y="440" fill="#7b8294" font-size="10.5">SRM high-pass filters expose splice/edit noise residuals</text>
+
+  <!-- Bottleneck -->
+  <path d="M386,157 C420,157 420,250 452,258" fill="none" stroke="#6366f1" stroke-width="2" marker-end="url(#ar)"/>
+  <path d="M386,381 C420,381 420,278 452,270" fill="none" stroke="#a855f7" stroke-width="2" marker-end="url(#ar)"/>
+  <rect x="454" y="232" width="96" height="64" rx="10" fill="#1c1f3a" stroke="#6366f1"/>
+  <text x="502" y="260" text-anchor="middle" fill="#c7c9ff" font-size="12" font-weight="700">Bottleneck</text>
+  <text x="502" y="278" text-anchor="middle" fill="#9aa0b4" font-size="10">fuse both streams</text>
+
+  <!-- Classifier head -->
+  <path d="M502,232 C502,180 560,180 596,180" fill="none" stroke="#6366f1" stroke-width="2" marker-end="url(#ar)"/>
+  <rect x="598" y="150" width="150" height="62" rx="10" fill="#151922" stroke="#262c39"/>
+  <text x="673" y="176" text-anchor="middle" fill="#d4d8e2" font-size="12" font-weight="600">Classifier head</text>
+  <text x="673" y="194" text-anchor="middle" fill="#7b8294" font-size="10.5">global pool → linear</text>
+  <line x1="748" y1="181" x2="784" y2="181" stroke="#6366f1" stroke-width="2" marker-end="url(#ar)"/>
+  <rect x="786" y="156" width="182" height="50" rx="10" fill="rgba(239,68,68,.12)" stroke="#ef4444"/>
+  <text x="877" y="178" text-anchor="middle" fill="#ef4444" font-size="12" font-weight="700">Tampered probability</text>
+  <text x="877" y="195" text-anchor="middle" fill="#b98" font-size="10">→ fused into verdict</text>
+
+  <!-- Decoder -->
+  <path d="M550,270 C580,270 580,330 600,338" fill="none" stroke="#22c55e" stroke-width="2" marker-end="url(#arg)"/>
+  <rect x="602" y="306" width="172" height="70" rx="10" fill="#151922" stroke="#262c39"/>
+  <text x="688" y="332" text-anchor="middle" fill="#d4d8e2" font-size="12" font-weight="600">U-Net decoder</text>
+  <text x="688" y="350" text-anchor="middle" fill="#7b8294" font-size="10.5">upsample + skip</text>
+  <text x="688" y="366" text-anchor="middle" fill="#7b8294" font-size="10.5">connections (e1,e2,e3)</text>
+  <line x1="774" y1="341" x2="810" y2="341" stroke="#22c55e" stroke-width="2" marker-end="url(#arg)"/>
+  <rect x="812" y="316" width="156" height="50" rx="10" fill="rgba(34,197,94,.12)" stroke="#22c55e"/>
+  <text x="890" y="338" text-anchor="middle" fill="#22c55e" font-size="12" font-weight="700">Tamper mask</text>
+  <text x="890" y="355" text-anchor="middle" fill="#8fb" font-size="10">→ heatmap overlay</text>
+
+  <!-- skip connection hint -->
+  <path d="M229,186 C229,470 660,470 660,376" fill="none" stroke="#22c55e" stroke-width="1.2" stroke-dasharray="4 4" opacity=".5"/>
+  <text x="300" y="486" fill="#3f8f5f" font-size="10">skip connections preserve spatial detail for precise localization</text>
+
+  <text x="32" y="508" fill="#5b6270" font-size="11">Validation AUC ≈ 0.94 · trained on balanced clean/forged document pairs</text>
+</svg>
