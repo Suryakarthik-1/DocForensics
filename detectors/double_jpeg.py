@@ -15,14 +15,26 @@ def dct_histogram(img: np.ndarray, bins: int = DCT_HIST_BINS) -> np.ndarray:
     return hist.astype(np.float32)
 
 def detect_double_compression(hist: np.ndarray) -> tuple[float, list]:
-    diff2     = np.diff(hist.astype(np.float64), n=2)
-    periodicity = float(np.std(diff2))
-    mean_val    = float(hist.mean())
+    # Double compression shows up as periodic gaps/peaks in the DCT-coefficient
+    # histogram. A document's huge white background creates one dominant bin that
+    # would swamp the signal, so we log-compress and drop the single largest bin
+    # before measuring periodicity in the tails.
+    h = hist.astype(np.float64).copy()
+    if h.sum() <= 0:
+        return 0.0, []
 
-    if mean_val > 0:
-        score = float(np.clip(periodicity / (mean_val + 1e-6) * 0.1, 0, 1))
-    else:
-        score = 0.0
+    h[h.argmax()] = 0.0                 # remove the dominant peak
+    h = np.log1p(h)
+    peak = h.max()
+    if peak <= 0:
+        return 0.0, []
+    h = h / peak                        # normalise to 0..1
+
+    diff2 = np.diff(h, n=2)
+    periodicity = float(np.std(diff2))
+
+    # Single-compressed images sit low here; conservative mapping.
+    score = float(np.clip((periodicity - 0.10) / 0.30, 0, 1))
     return score, []
 
 class DoubleJpegDetector(Detector):

@@ -10,7 +10,9 @@ from model.dataset import TamperDataset
 from model.evaluate import evaluate
 
 
-def compute_loss(pred_mask, pred_logit, gt_mask, gt_label, pos_weight: float = 10.0):
+def compute_loss(pred_mask, pred_logit, gt_mask, gt_label, pos_weight: float = 1.0):
+    # pos_weight scales the POSITIVE (tampered) class. Tampered is the majority
+    # here, so pos_weight < 1 down-weights it and balances toward genuine.
     pw         = torch.tensor([pos_weight], device=pred_logit.device)
     label_loss = nn.BCEWithLogitsLoss(pos_weight=pw)(pred_logit.view(-1), gt_label.float())
 
@@ -33,6 +35,13 @@ def train():
     train_dl = DataLoader(train_ds, batch_size=BATCH_SIZE, shuffle=True,  num_workers=0)
     val_dl   = DataLoader(val_ds,   batch_size=BATCH_SIZE, shuffle=False, num_workers=0)
 
+    # Balance the classes: pos_weight = n_genuine / n_tampered
+    labels    = [lbl for _, lbl in train_ds.items]
+    n_tamper  = max(sum(labels), 1)
+    n_genuine = max(len(labels) - n_tamper, 1)
+    pos_weight = n_genuine / n_tamper
+    print(f'Class balance: {n_genuine} genuine / {n_tamper} tampered → pos_weight={pos_weight:.3f}')
+
     model = TamperNet().to(device)
     opt   = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
     sched = torch.optim.lr_scheduler.ReduceLROnPlateau(opt, patience=3, factor=0.5)
@@ -51,7 +60,7 @@ def train():
             imgs, masks, labels = imgs.to(device), masks.to(device), labels.to(device)
             opt.zero_grad()
             pred_mask, pred_logit = model(imgs)
-            loss = compute_loss(pred_mask, pred_logit, masks, labels)
+            loss = compute_loss(pred_mask, pred_logit, masks, labels, pos_weight)
             loss.backward()
             opt.step()
             train_loss += loss.item()

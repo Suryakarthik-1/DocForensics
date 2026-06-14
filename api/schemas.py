@@ -9,6 +9,7 @@ class DetectorResult(BaseModel):
 
 class AnalyzeResponse(BaseModel):
     is_tampered: bool
+    label: str
     confidence: float
     evidence: list[str]
     per_detector: list[DetectorResult]

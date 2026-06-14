@@ -2,11 +2,29 @@ import numpy as np
 
 from core.types import BBox, TextRegion
 
+# ── Cached OCR engine (instantiated once) ─────────────────────────────────────
+_paddle = None
+_paddle_failed = False
 
-def extract_text_regions(img: np.ndarray) -> list[TextRegion]:
+
+def _get_paddle():
+    global _paddle, _paddle_failed
+    if _paddle is not None or _paddle_failed:
+        return _paddle
     try:
         from paddleocr import PaddleOCR
-        ocr = PaddleOCR(use_angle_cls=True, lang='en')
+        _paddle = PaddleOCR(use_angle_cls=True, lang='en')
+    except Exception:
+        _paddle_failed = True
+        _paddle = None
+    return _paddle
+
+
+def extract_text_regions(img: np.ndarray) -> list[TextRegion]:
+    ocr = _get_paddle()
+    if ocr is None:
+        return _tesseract(img)
+    try:
         img_uint8 = (np.clip(img, 0, 1) * 255).astype('uint8')
         result = ocr.ocr(img_uint8, cls=True)
         regions = []
@@ -20,14 +38,20 @@ def extract_text_regions(img: np.ndarray) -> list[TextRegion]:
                 h    = int(max(ys) - min(ys))
                 regions.append(TextRegion(bbox=BBox(x, y, w, h), text=text, confidence=conf))
         return regions
-    except (ImportError, Exception):
+    except Exception:
         return _tesseract(img)
 
 
 def _tesseract(img: np.ndarray) -> list[TextRegion]:
-    import pytesseract
+    try:
+        import pytesseract
+    except Exception:
+        return []
     img_uint8 = (np.clip(img, 0, 1) * 255).astype('uint8')
-    data = pytesseract.image_to_data(img_uint8, output_type=pytesseract.Output.DICT)
+    try:
+        data = pytesseract.image_to_data(img_uint8, output_type=pytesseract.Output.DICT)
+    except Exception:
+        return []
     regions = []
     for i, text in enumerate(data['text']):
         if text.strip() and int(data['conf'][i]) > 30:

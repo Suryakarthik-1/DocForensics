@@ -27,18 +27,21 @@ DCT_HIST_BINS   = 64
 
 FONT_BASELINE_TOL = 3
 
+# The CNN and AI-classifier are the most reliable signals. copy_move and
+# double_jpeg are weak on text documents (legitimate repetition looks like
+# tampering), so they carry little weight.
 FUSION_WEIGHTS = {
-    'ela':          0.13,
+    'ela':          0.15,
     'noise':        0.13,
-    'copy_move':    0.13,
-    'double_jpeg':  0.08,
-    'font':         0.13,
-    'metadata':     0.08,
-    'ai_generated': 0.12,
-    'model':        0.20,
+    'copy_move':    0.04,
+    'double_jpeg':  0.03,
+    'font':         0.10,
+    'metadata':     0.05,
+    'ai_generated': 0.20,
+    'model':        0.30,
 }
 
-TAMPER_THRESHOLD = 0.50
+TAMPER_THRESHOLD = 0.45
 
 MODEL_INPUT_SIZE    = 128
 BATCH_SIZE          = 4

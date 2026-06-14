@@ -23,8 +23,14 @@ def _heatmap_to_base64(heatmap: np.ndarray) -> str:
 @router.post('/analyze', response_model=AnalyzeResponse)
 async def analyze_document(file: UploadFile):
     ext = Path(file.filename or '').suffix.lower()
+    mime_to_ext = {
+        'image/jpeg': '.jpg', 'image/png': '.png',
+        'image/tiff': '.tiff', 'application/pdf': '.pdf',
+    }
     if ext not in SUPPORTED_EXTS:
-        raise HTTPException(status_code=400, detail=f'Unsupported file type: {ext}')
+        ext = mime_to_ext.get(file.content_type or '', '')
+    if ext not in SUPPORTED_EXTS:
+        raise HTTPException(status_code=400, detail=f'Unsupported file type: {file.filename!r} ({file.content_type})')
 
     with tempfile.NamedTemporaryFile(suffix=ext, delete=False) as tmp:
         tmp.write(await file.read())
@@ -39,6 +45,7 @@ async def analyze_document(file: UploadFile):
 
     return AnalyzeResponse(
         is_tampered=verdict.is_tampered,
+        label=verdict.label,
         confidence=round(verdict.confidence, 4),
         evidence=verdict.evidence,
         per_detector=[

@@ -35,3 +35,4 @@ class Verdict:
     fused_heatmap: np.ndarray
     evidence: list[str]
     per_detector: list[Detection]
+    label: str = "AUTHENTIC"   # AUTHENTIC | AI-GENERATED | TAMPERED
