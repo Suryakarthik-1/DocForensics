@@ -33,8 +33,9 @@ def detect_double_compression(hist: np.ndarray) -> tuple[float, list]:
     diff2 = np.diff(h, n=2)
     periodicity = float(np.std(diff2))
 
-    # Single-compressed images sit low here; conservative mapping.
-    score = float(np.clip((periodicity - 0.10) / 0.30, 0, 1))
+    # Single-compressed images sit low here; conservative mapping. Like
+    # copy-move, this is a weak, low-weight hint on text-heavy documents.
+    score = float(np.clip((periodicity - 0.24) / 0.30, 0, 0.6))
     return score, []
 
 class DoubleJpegDetector(Detector):

@@ -1,19 +1,32 @@
+# ── Core / numerics ──
 numpy
-opencv-python
+opencv-python-headless        # headless: no GUI libs needed on servers
 Pillow
 scikit-image
 scipy
-pytest
-pytest-cov
-fastapi
-uvicorn[standard]
-python-multipart
-pydantic
-exifread
-PyMuPDF
 PyWavelets
-transformers
+scikit-learn
+
+# ── Deep learning ──
+# For deployment install the CPU build to keep the image small:
+#   pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
 torch
 torchvision
-httpx2
-scikit-learn
+transformers
+
+# ── Document / forensics IO ──
+exifread
+PyMuPDF
+pytesseract                   # OCR fallback (requires the tesseract-ocr binary)
+
+# ── API ──
+fastapi
+uvicorn[standard]
+gunicorn
+python-multipart
+pydantic
+
+# ── Tests ──
+pytest
+pytest-cov
+httpx                         # required by FastAPI TestClient

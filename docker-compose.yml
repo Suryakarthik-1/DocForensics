@@ -1,0 +1,11 @@
+# Local full-stack run: builds the frontend + backend into one container and
+# serves everything at http://localhost:8000
+services:
+  docforensics:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      # - ALLOWED_ORIGINS=https://your-domain.com
+    restart: unless-stopped

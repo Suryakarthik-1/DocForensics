@@ -79,9 +79,12 @@ class CopyMoveDetector(Detector):
                 blocks_area = len(best_boxes) * CM_BLOCK_SIZE * CM_BLOCK_SIZE
                 density = float(blocks_area / (bb_area + 1e-6))
 
+            # NOTE: block matching is inherently weak on text documents, where
+            # legitimately-repeated text mimics copy-move. We keep this as a soft,
+            # low-weight hint (see FUSION_WEIGHTS) rather than a hard signal, and
+            # cap the score so a normal page never reads as a confident forgery.
             flagged = cluster >= CM_MIN_CLUSTER and density >= 0.25
-            score   = float(np.clip((cluster - CM_MIN_CLUSTER) * 0.05 * density, 0, 1)) \
-                      if flagged else 0.0
+            score   = float(np.clip(cluster / 3000.0, 0, 0.6)) if flagged else 0.0
 
             heatmap = np.zeros(img.shape[:2], dtype=np.float32)
             regions = []

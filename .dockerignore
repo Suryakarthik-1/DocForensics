@@ -1,0 +1,17 @@
+venv/
+**/__pycache__/
+*.pyc
+.pytest_cache/
+.git/
+.gitignore
+tests/
+data/genuine/
+data/tampered/
+data/masks/
+test.jpg
+frontend/node_modules/
+frontend/dist/
+model/checkpoints/last.pt
+model/checkpoints/history.json
+*.md
+.hf_cache/

@@ -1,3 +1,5 @@
+import os
+
 import cv2
 import numpy as np
 
@@ -10,8 +12,16 @@ _classifier_failed = False
 
 
 def _get_classifier():
-    """Lazily load the AI-image classifier exactly once."""
+    """Lazily load the AI-image classifier exactly once.
+
+    Set DOCFORENSICS_DISABLE_AI_MODEL=1 to skip the ~350 MB download entirely
+    (useful for CI and memory-constrained hosts — the detector then relies on its
+    frequency/EXIF signals only).
+    """
     global _classifier, _classifier_failed
+    if os.getenv('DOCFORENSICS_DISABLE_AI_MODEL') == '1':
+        _classifier_failed = True
+        return None
     if _classifier is not None or _classifier_failed:
         return _classifier
     try:

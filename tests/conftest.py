@@ -32,3 +32,15 @@ def sample_regions():
 @pytest.fixture
 def base_context(clean_image):
     return Context(file_path='test.jpg', text_regions=[], original_img=clean_image)
+
+
+@pytest.fixture
+def regions_context(clean_image, sample_regions):
+    return Context(file_path='test.jpg', text_regions=sample_regions, original_img=clean_image)
+
+
+@pytest.fixture
+def bgr_uint8():
+    """A small 3-channel uint8 image suitable for cv2-based forgery functions."""
+    rng = np.random.default_rng(7)
+    return (rng.uniform(0, 255, (96, 96, 3))).astype(np.uint8)
