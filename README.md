@@ -1,3 +1,13 @@
+---
+title: DocForensics
+emoji: 🔍
+colorFrom: indigo
+colorTo: purple
+sdk: docker
+app_port: 8000
+pinned: false
+---
+
 # 🔍 DocForensics — Document Tampering & Forgery Detector
 
 A computer-vision system that inspects documents and images for signs of
