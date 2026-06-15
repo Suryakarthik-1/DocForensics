@@ -19,6 +19,8 @@
 /* ── Layout ── */
 .wrap { flex: 1; width: 100%; max-width: 980px; margin: 0 auto; padding: 56px 24px; }
 .foot { text-align: center; padding: 24px; font-size: 12px; color: var(--dim); border-top: 1px solid var(--line); }
+.foot-link { color: var(--brand); text-decoration: none; font-weight: 600; }
+.foot-link:hover { text-decoration: underline; }
 
 .fade { animation: fade .45s ease both; }
 @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }

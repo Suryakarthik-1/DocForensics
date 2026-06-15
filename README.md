@@ -133,3 +133,14 @@ frontend/backend hosting.
   verdict.
 - The first request downloads a ~350 MB AI-detector model, then caches it.
   Set `DOCFORENSICS_DISABLE_AI_MODEL=1` to skip it on memory-constrained hosts.
+
+---
+
+## Author
+
+**Developed by Surya Karthik**
+
+- 💼 LinkedIn: [linkedin.com/in/surya-karthik-](https://www.linkedin.com/in/surya-karthik-)
+- 📧 Get in touch: [g.suryakarthik@gmail.com](mailto:g.suryakarthik@gmail.com)
+
+Feedback and contributions are welcome — feel free to open an issue or reach out.
