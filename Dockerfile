@@ -39,6 +39,11 @@ COPY detectors/ ./detectors/
 COPY fusion/ ./fusion/
 COPY ingestion/ ./ingestion/
 COPY model/ ./model/
+# Hugging Face Spaces can't store binaries in plain git, so the trained model is
+# kept in the public GitHub repo and downloaded here at build time.
+RUN mkdir -p model/checkpoints && \
+    python -c "import urllib.request; urllib.request.urlretrieve('https://raw.githubusercontent.com/Suryakarthik-1/docforensics_V2/main/model/checkpoints/best.pt', 'model/checkpoints/best.pt')" && \
+    python -c "import os; assert os.path.getsize('model/checkpoints/best.pt') > 1_000_000, 'model download failed'"
 COPY synth/ ./synth/
 COPY api/ ./api/
 COPY --from=frontend /app/frontend/dist ./frontend/dist
