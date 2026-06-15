@@ -14,9 +14,10 @@ RUN npm run build          # outputs frontend/dist
 FROM python:3.11-slim AS backend
 WORKDIR /app
 
+# HF_HOME points at an always-writable dir for the model download at runtime
 ENV PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
-    HF_HOME=/tmp/hf_cache        # always-writable cache for the HF model download
+    HF_HOME=/tmp/hf_cache
 
 # System libs: tesseract for OCR fallback, libs OpenCV-headless / torch need
 RUN apt-get update && apt-get install -y --no-install-recommends \
