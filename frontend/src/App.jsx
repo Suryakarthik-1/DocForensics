@@ -177,9 +177,13 @@ export default function App() {
       </main>
 
       <footer className="foot">
-        DocForensics · built with FastAPI, PyTorch &amp; React · Developed by{' '}
-        <a className="foot-link" href="https://www.linkedin.com/in/surya-karthik-"
-           target="_blank" rel="noreferrer">Surya Karthik</a>
+        <div className="foot-dev">Developed by <span className="foot-name">Surya Karthik</span></div>
+        <div className="foot-links">
+          <a className="foot-link" href="https://www.linkedin.com/in/surya-karthik-"
+             target="_blank" rel="noreferrer">💼 LinkedIn</a>
+          <a className="foot-link" href="mailto:g.suryakarthik@gmail.com">📧 g.suryakarthik@gmail.com</a>
+        </div>
+        <div className="foot-meta">Built with FastAPI · PyTorch · React</div>
       </footer>
     </div>
   )
