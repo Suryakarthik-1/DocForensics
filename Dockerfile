@@ -43,6 +43,6 @@ COPY synth/ ./synth/
 COPY api/ ./api/
 COPY --from=frontend /app/frontend/dist ./frontend/dist
 
-EXPOSE 8000
-# $PORT is provided by most hosts (Render/Railway); HF Spaces uses 7860.
-CMD ["sh", "-c", "uvicorn api.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
+EXPOSE 7860
+# Render/Railway inject $PORT; Hugging Face Spaces expects 7860 (our default).
+CMD ["sh", "-c", "uvicorn api.main:app --host 0.0.0.0 --port ${PORT:-7860}"]
